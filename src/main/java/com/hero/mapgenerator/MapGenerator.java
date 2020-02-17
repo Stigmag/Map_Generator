@@ -9,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
+import java.util.*;
 
 import static com.oracle.jrockit.jfr.ContentType.Bytes;
 
@@ -22,20 +20,33 @@ public class MapGenerator {
     private byte sizeY;
 
     private byte[] mapArray= new byte[200];
-
+   private static Map<Byte,byte[]> locationList= new HashMap<>();
     public MapGenerator(byte sizeX, byte sizeY) {
         this.sizeX = sizeX;
         this.sizeY = sizeY;
     }
 
-    public static UUID getUUIDFromBytes(byte[] bytes) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        Long high = byteBuffer.getLong();
-        Long low = byteBuffer.getLong();
 
-        return new UUID(high, low);
+
+    public static Map generateUUIDForLocation()
+    {
+
+        locationList.put((byte)10,generateUUID());// water
+        locationList.put((byte)0,generateUUID());//forest
+        locationList.put((byte)1,generateUUID());//mountains
+        locationList.put((byte)11,generateUUID());//road
+        locationList.put((byte)100,generateUUID());//river
+        locationList.put((byte)101,generateUUID());//sand
+        locationList.put((byte)110,generateUUID());//meadow
+        locationList.put((byte)111,generateUUID());//swamp
+        locationList.put((byte)1111,generateUUID());//place where we can come in
+        log.info(locationList.toString());
+        return locationList;
     }
-    public byte[] fillMap() {
+
+
+
+    public static byte[] generateUUID() {
 
         UUID uuid = UUID.randomUUID();
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
@@ -50,7 +61,28 @@ public class MapGenerator {
         return mapArray;
     }
 
+    public void getLocation(byte[] currentUUID)
+    {
+
+        for (Map.Entry<Byte, byte[]> entry : locationList.entrySet()) {
+        byte[] UUID=entry.getValue();
+
+        if (Arrays.equals(UUID,currentUUID)) {
+           log.info(entry.getKey().toString());
+        }
+
+    }
+
+
+    }
+
+    public byte getSizeX() {
+        return sizeX;
+    }
+
     public byte[] createMapArray() {
+        List<byte[]> valuesListOfLocation = new ArrayList<byte[]>(generateUUIDForLocation().values());
+
         int i=0;
         int j=0;
 while(i<=sizeY) {
@@ -58,10 +90,11 @@ while(i<=sizeY) {
         mapArray[j] = (byte) 3;
 
         mapArray[j + 1] = (byte) 5;
-
-        System.arraycopy(fillMap(), 0, mapArray, j + 2, fillMap().length);
+    int randomIndex = new Random().nextInt(valuesListOfLocation.size());
+    byte[] randomUUIDLocationFromList = valuesListOfLocation.get(randomIndex);
+        System.arraycopy(randomUUIDLocationFromList, 0, mapArray, j + 2,randomUUIDLocationFromList.length );
         i++;
-        j+=17;
+        j+=18;
 
 }
 
