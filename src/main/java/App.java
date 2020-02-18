@@ -1,4 +1,6 @@
 import com.hero.mapgenerator.FileParser;
+
+import com.hero.mapgenerator.MapCreator;
 import com.hero.mapgenerator.MapGenerator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,8 +11,9 @@ import java.util.UUID;
 @Slf4j
 public class App {
     public static void main(String[] args) {
-        MapGenerator map = new MapGenerator((byte) 10, (byte) 10);
-        map.createMapArray();
+       // MapGenerator map = new MapGenerator((byte) 20, (byte) 20);
+        MapCreator map= new MapCreator();
+      //  map.createMapArray();
         try {
             FileParser.saveMapInFile(map);
         } catch (IOException e) {
@@ -18,13 +21,8 @@ public class App {
         }
         try {int i = 0;
             byte[] myMap = FileParser.readMapFromFile("Map");
-            for(int j=0; j<map.getSizeX();j++){
+            log.info(myMap.toString());
 
-            byte[] currentUUID = new byte[16];
-            System.arraycopy(myMap, i+2, currentUUID, 0, 16);
-            i+=18;
-            map.getLocation(currentUUID);
-            }
         } catch (IOException e) {
             log.info("Fucking ERROR");
         }
